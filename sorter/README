@@ -1,0 +1,1 @@
+设置好GOPATH后，原先我们只需要建立sorter/src这个目录下的东东，go install algorithms/qsort 会自动生成对应的pkg文件夹，然后go build sorter生成可执行文件，同时自动生成bin文件夹
