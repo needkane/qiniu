@@ -1,40 +1,41 @@
 package main
 
 import (
-	//"fmt"
 	. "github.com/qiniu/api/conf"
 	"github.com/qiniu/api/fop"
 	//"github.com/qiniu/api/io"
 	"github.com/qiniu/api/rs"
 	"github.com/qiniu/api/rsf"
-	"github.com/qiniu/rpc"
+	"github.com/qiniu/rpc.v1"
 	"io"
 	"log"
 )
 
 func init() {
 
-	ACCESS_KEY = "fDidaMyecyd7b9Vtc1Yqzl3unHcfAli4EC4iSisR"
-	SECRET_KEY = "tFYXaoOXdVtdmnujRMHgFGfmNdmUgJNdzvV-fdXy"
+	ACCESS_KEY = "-9qVmPlRdq3CJgiyRBjnKX4ihYz4AHpFjYVkiR2A"
+	SECRET_KEY = "bdiREwcdRTa8ORqjim2HGPpp3EA7nNxN02nDf4ur"
 }
 
 func main() {
-	//delFile2()
-	//imageAttr2()
-	//copyFile("needkane", "need", "needcrystal", "needtoo")
-	//fmt.Println(downloadUrl("needcrystal.qiniudn.com", "needtoo"))
+	/*delFile2()
+	imageAttr2()
+	copyFile("needkane", "need", "needcrystal", "needtoo")*/
+	log.Println(downloadUrl("7te1kx.com1.z0.glb.clouddn.com", "HMRZnzCmSjWx6L3JhegtAg78Ais=/lmEUf_B9rb2bCwQLFc-K7EO6O8yw"))
 	//getBatchInfo()
-	//highBatch()
-	//println(makeViewUrl("http://needkane.qiniudn.com/need"))
+	/*highBatch()
+	println(makeViewUrl("http://needkane.qiniudn.com/need"))
 	var rc = rsf.New(nil)
 
-	listAll(nil, &rc, "needkane", "nee")
+	listAll(nil, &rc, "need10", "13")*/
+
+	//log.Println(downloadUrl("needkane", "13.mkv"))
 }
 
 //5.2delete file
 func delFile2() {
-	bucket := "needkane"
-	key := "kane2"
+	bucket := "need10"
+	key := "13.mkv"
 	var rsCli = rs.New(nil)
 	err := rsCli.Delete(nil, bucket, key)
 	if err != nil {
@@ -75,6 +76,8 @@ func copyFile(bucketSrc string, keySrc string, bucketDest string, keyDest string
 //download
 func downloadUrl(domain, key string) string {
 	baseUrl := rs.MakeBaseUrl(domain, key)
+	//baseUrl = baseUrl + "?pm3u8/0/e/1438162783"
+	baseUrl = baseUrl + "?avinfo"
 	policy := rs.GetPolicy{}
 	return policy.MakeRequest(baseUrl, nil)
 }

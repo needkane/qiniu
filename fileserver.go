@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	h := http.FileServer(http.Dir("/home/qboxtest/Desktop"))
+	h := http.FileServer(http.Dir("/home/qboxtest/Downloads"))
 	http.ListenAndServe(":3808", h)
 }
