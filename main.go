@@ -2,13 +2,16 @@ package main
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/base64"
 	//"encoding/base64"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,22 +26,24 @@ import (
 )
 
 var (
-	ACCESS_KEY = "fDidaMyecyd7b9Vtc1Yqzl3unHcfAli4EC4iSisR"
-	SECRET_KEY = "tFYXaoOXdVtdmnujRMHgFGfmNdmUgJNdzvV-fdXy"
+	ACCESS_KEY = ""
+	SECRET_KEY = ""
 	UP_HOST    = "http://up-z1.qiniu.com"
 )
 
 func main() {
-	upload2()
+	//	upload3()
+	newUrl := makeSaveasUrl("http://needkane.qiniudn.com/lufei.jpg?imageMogr2/thumbnail/200x", ACCESS_KEY, []byte(SECRET_KEY), "needkane", "k45")
+	log.Println(newUrl)
 }
 
 //GET upload access token
 func uptoken(bucketName string) string {
 	putPolicy := rs.PutPolicy{
 		Scope: bucketName,
-		//CallbackUrl: callbackUrl,
+		//CallbackUrl: "127.0.0.1",
 		//CallbackBody:callbackBody,
-		//ReturnUrl: returnUrl,
+		//ReturnUrl: "127.0.0.1",
 		//ReturnBody: returnBody,
 		//AsyncOps: asyncOps,
 		//EndUser: endUser,
@@ -49,10 +54,20 @@ func uptoken(bucketName string) string {
 }
 
 func upload() {
-	uptoken := uptoken("needkane")
-	fmt.Printf("uptoken:%s\n", uptoken)
-
-	var err error
+	policy := up.AuthPolicy{
+		Scope:               "needkane",
+		InsertOnly:          0, //如果设置为非0值, 则无论scope设置为什么形式, 仅能以新增模式上传文件: 1,
+		Deadline:            time.Now().Unix() + 3600,
+		CallbackUrl:         "125.64.9.132:8090/callback",
+		CallbackBody:        "callbackBody",
+		PersistentNotifyUrl: "125.64.9.132:8090/callback",
+		//CallbackBody:callbackBody,
+		//ReturnUrl: "http://101.71.89.171:6666",
+		//DetectMime: detectMime,
+		PersistentOps:      "vframe/jpg/offset/2",
+		PersistentPipeline: "kane",
+	}
+	uptoken := up.MakeAuthTokenString(ACCESS_KEY, SECRET_KEY, &policy)
 	var ret qio.PutRet
 	var extra = &qio.PutExtra{
 	//Params: params,
@@ -60,16 +75,7 @@ func upload() {
 	//Crc32: crc32,
 	//CheckCrc: CheckCrc,
 	}
-
-	var key = "face-36123"
-	var localFile = "/home/qboxtest/Desktop/13.mkv"
-
-	// ret 变量用于存取返回的信息，详情见 io.PutRet
-	// uptoken 为业务服务器生成的上传口令
-	// key 为文件存储的标识
-	// localFile 为本地文件名
-	// extra 为上传文件的额外信息，详情见 io.PutExtra，可选
-	err = qio.PutFile(nil, &ret, uptoken, key, localFile, extra)
+	err := qio.PutFile(nil, &ret, uptoken, "key123", "/home/qboxtest/Desktop/123.mp4", extra)
 
 	if err != nil {
 		//上传产生错误
@@ -79,33 +85,86 @@ func upload() {
 
 	//上传成功，处理返回值
 	log.Print(ret.Hash, ret.Key)
-
 }
 
 func upload2() {
-	file, err := os.Open("/home/qboxtest/Desktop/13.mkv")
+	file, err := os.Open("/home/qboxtest/Desktop/123.mp4")
 	if err != nil {
 		log.Println("os.Open failed")
 	}
 	defer file.Close()
 	policy := up.AuthPolicy{
-		Scope:      "needbc",
-		InsertOnly: 0, //如果设置为非0值, 则无论scope设置为什么形式, 仅能以新增模式上传文件: 1,
-		Deadline:   uint32(time.Now().Unix()) + 3600,
+		Scope:        "needbc",
+		InsertOnly:   0, //如果设置为非0值, 则无论scope设置为什么形式, 仅能以新增模式上传文件: 1,
+		Deadline:     time.Now().Unix() + 3600,
+		CallbackUrl:  "125.64.9.132:8090/callback",
+		CallbackBody: "callbackBody",
+		//PersistentNotifyUrl: "125.64.9.132:8090/callback",
+		//CallbackBody:callbackBody,
 		//DetectMime: detectMime,
-		PersistentOps:      "vframe/jpg/offset/1|saveas/bmVlZGJjOjEzdjI=",
-		PersistentPipeline: "kane",
+		//PersistentOps:      "vframe/jpg/offset/2",
+		//PersistentPipeline: "kane2",
 	}
 	uptoken := up.MakeAuthTokenString(ACCESS_KEY, SECRET_KEY, &policy)
+
 	url := UP_HOST
 	//bucket:filename
-	entry := "needbc:13v1"
+	entry := "needbc:132"
 	//encodeEntryUri := base64.URLEncoding.EncodeToString([]byte(entry))
 	//action := "/rs-put/" + encodeEntryUri
 	extraParams := map[string]string{
 		"token": uptoken,
 		//"action": action,
-		"key": "13v",
+		"key": "13v2",
+	}
+	filename := entry
+	idx := strings.Index(entry, ":")
+	if idx != -1 {
+		filename = entry[idx+1:]
+	}
+	req, err := newUploadRequest(url, "file", filename, extraParams, file)
+	if err != nil {
+		log.Println("---------err:", err)
+	}
+	hc := http.Client{}
+	resp, err := hc.Do(req)
+	log.Println("--------create resp")
+	data, _ := ioutil.ReadAll(resp.Body)
+	log.Println(resp.StatusCode, "-----------", err, "---------", string(data))
+}
+
+func upload3() {
+	ACCESS_KEY = ""
+	SECRET_KEY = ""
+	UP_HOST = "http://127.0.0.1:11200"
+	file, err := os.Open("/home/qboxtest/Desktop/123.mp4")
+	if err != nil {
+		log.Println("os.Open failed")
+	}
+	defer file.Close()
+	policy := up.AuthPolicy{
+		Scope:               "need10",
+		InsertOnly:          0, //如果设置为非0值, 则无论scope设置为什么形式, 仅能以新增模式上传文件: 1,
+		Deadline:            time.Now().Unix() + 3600,
+		CallbackUrl:         "125.64.9.132:8090/callback",
+		CallbackBody:        "callbackBody",
+		PersistentNotifyUrl: "125.64.9.132:8090/callback",
+		//CallbackBody:callbackBody,
+		//DetectMime: detectMime,
+		PersistentOps:      "vframe/jpg/offset/2|saveas/bmVlZDEwOjEzMw==",
+		PersistentPipeline: "need",
+	}
+	uptoken := up.MakeAuthTokenString(ACCESS_KEY, SECRET_KEY, &policy)
+
+	url := UP_HOST
+	//bucket:filename
+	entry := "needbc:132"
+	//encodeEntryUri := base64.URLEncoding.EncodeToString([]byte(entry))
+	//action := "/rs-put/" + encodeEntryUri
+	extraParams := map[string]string{
+		"token": uptoken,
+		//"action": action,
+		"key": "13v3",
 	}
 	filename := entry
 	idx := strings.Index(entry, ":")
@@ -145,4 +204,26 @@ func newUploadRequest(url, paramName, fileName string, params map[string]string,
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return
+}
+
+func makeSaveasUrl(URL, accessKey string, secretKey []byte, saveBucket, saveKey string) string {
+	accessKey = "v7VBTrPY-M28Yzz2Bq4gb0fW_yBVRQahuQQSj3B2"
+	secretKey = []byte("rjJ51h_-4dwxWC2r1u_hFvg-4Vfok_ejdF4EEiuQ")
+	encodedEntryURI := base64.URLEncoding.EncodeToString([]byte(saveBucket + ":" + saveKey))
+
+	URL += "|saveas/" + encodedEntryURI
+
+	h := hmac.New(sha1.New, secretKey)
+
+	// 签名内容不包括Scheme，仅含如下部分：
+	// <Domain>/<Path>?<Query>
+
+	u, _ := url.Parse(URL)
+	io.WriteString(h, u.Host+u.RequestURI())
+
+	d := h.Sum(nil)
+	sign := accessKey + ":" + base64.URLEncoding.EncodeToString(d)
+
+	return URL + "/sign/" + sign
+
 }

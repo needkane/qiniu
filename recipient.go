@@ -37,6 +37,7 @@ func serveUfop(w http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		WriteJsonError(w, 405, "method not allowed")
 	}
+	log.Println("------------",req.Method)
 	defer req.Body.Close()
 	ufopReqData, err := ioutil.ReadAll(req.Body)
 	if err != nil {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 )
 
@@ -26,7 +27,12 @@ func main() {
 	/*reg := regexp.MustCompile(`[0-9]+`)
 	fmt.Println(reg.Find("500x500+12+13"))*/
 
-	matched,err=regexp.Match("^faceCrop/[0-9]+[x][0-9]+",[]byte("faceCrop/50f0x500"))
-	fmt.Println("------",matched,err)
-	
+	matched, err = regexp.Match("^faceCrop/[0-9]+[x][0-9]+", []byte("faceCrop/50f0x500"))
+	fmt.Println("------", matched, err)
+
+	fmt.Println("-------------------------")
+	matched, _ = regexp.Match("^animated/(gif2webp|webp2gif)^", []byte("animated/gif2webp"))
+	if !matched {
+		log.Println("parameters dismatched")
+	}
 }

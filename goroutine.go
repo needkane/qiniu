@@ -36,6 +36,9 @@ func main() {
 		}
 		go fmt.Println("----", line)
 	}
+	for i := 0; i < 10; i++ {
+		go fmt.Println("======", i)
+	}
 	var input string
 	fmt.Scanln(&input)
 	fmt.Println("done by " + input)

@@ -18,10 +18,10 @@ func init() {
 }
 
 func main() {
-	/*delFile2()
-	imageAttr2()
+	delFile2()
+	/*imageAttr2()
 	copyFile("needkane", "need", "needcrystal", "needtoo")*/
-	log.Println(downloadUrl("7te1kx.com1.z0.glb.clouddn.com", "HMRZnzCmSjWx6L3JhegtAg78Ais=/lmEUf_B9rb2bCwQLFc-K7EO6O8yw"))
+	//log.Println(downloadUrl("7te1kx.com1.z0.glb.clouddn.com", "HMRZnzCmSjWx6L3JhegtAg78Ais=/lmEUf_B9rb2bCwQLFc-K7EO6O8yw"))
 	//getBatchInfo()
 	/*highBatch()
 	println(makeViewUrl("http://needkane.qiniudn.com/need"))
@@ -35,7 +35,7 @@ func main() {
 //5.2delete file
 func delFile2() {
 	bucket := "need10"
-	key := "13.mkv"
+	key := "132"
 	var rsCli = rs.New(nil)
 	err := rsCli.Delete(nil, bucket, key)
 	if err != nil {
