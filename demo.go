@@ -13,8 +13,8 @@ import (
 
 func init() {
 
-	ACCESS_KEY = "-9qVmPlRdq3CJgiyRBjnKX4ihYz4AHpFjYVkiR2A"
-	SECRET_KEY = "bdiREwcdRTa8ORqjim2HGPpp3EA7nNxN02nDf4ur"
+	ACCESS_KEY = ""//ak
+	SECRET_KEY = ""//sk
 }
 
 func main() {
@@ -154,7 +154,6 @@ func listAll(l rpc.Logger, rc *rsf.Client, bucketName string, prefix string) {
 	}
 
 	if err != io.EOF {
-		//非预期的错误
 		log.Print("listAll failed:", err)
 	}
 }
