@@ -128,7 +128,6 @@ func upload2() {
 	}
 	hc := http.Client{}
 	resp, err := hc.Do(req)
-	log.Println("--------create resp")
 	data, _ := ioutil.ReadAll(resp.Body)
 	log.Println(resp.StatusCode, "-----------", err, "---------", string(data))
 }
@@ -207,8 +206,8 @@ func newUploadRequest(url, paramName, fileName string, params map[string]string,
 }
 
 func makeSaveasUrl(URL, accessKey string, secretKey []byte, saveBucket, saveKey string) string {
-	accessKey = "v7VBTrPY-M28Yzz2Bq4gb0fW_yBVRQahuQQSj3B2"
-	secretKey = []byte("rjJ51h_-4dwxWC2r1u_hFvg-4Vfok_ejdF4EEiuQ")
+	accessKey = ""//ak
+	secretKey = []byte("")//sk
 	encodedEntryURI := base64.URLEncoding.EncodeToString([]byte(saveBucket + ":" + saveKey))
 
 	URL += "|saveas/" + encodedEntryURI
